@@ -1,0 +1,20 @@
+version: '3'
+services:
+    apachephp:
+        image: nimmis/apache-php5
+        volumes:
+            - /Users/pasha/projects/vuejs/bookshop/server/www:/var/www/html
+        ports: 
+            - "8008:80"
+        depends_on:
+            - mysqldump
+        command: /bin/bash -c "sed -i 163,173's/AllowOverride None/AllowOverride All/gi' /etc/apache2/apache2.conf && (test -e /etc/apache2/mods-enabled/rewrite.load || ln /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load) &&  /my_init"
+    mysqldump:
+        image: mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_PORT=3306
+        ports:
+            - 3307:3306
+        volumes:
+            - ./www/database:/docker-entrypoint-initdb.d
