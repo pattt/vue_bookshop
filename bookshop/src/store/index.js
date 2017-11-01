@@ -18,11 +18,23 @@ const store = new Vuex.Store({
       state[type] = items
     },
     addToCart (state, item) {
-      let cart = localStorage.getItem('cart') || '[]'
+      let cart = sessionStorage.getItem('cart') || '[]'
       cart = JSON.parse(cart)
+      item._num = 1
+      Object.defineProperty(item, 'num', {
+        get: function () { return this._num },
+        set: function (y) { this._num = y; alert('qw'); sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
+      })
       cart.push(item)
       state.mcart = cart
-      localStorage.setItem('cart', JSON.stringify(cart))
+      sessionStorage.setItem('cart', JSON.stringify(cart))
+    },
+    removeFromCart (state, item) {
+      let cart = sessionStorage.getItem('cart') || '[]'
+      cart = JSON.parse(cart)
+      cart = cart.filter(v => v.book_id !== item.book_id)
+      state.mcart = cart
+      sessionStorage.setItem('cart', JSON.stringify(cart))
     }
   },
   actions: {
@@ -69,6 +81,21 @@ const store = new Vuex.Store({
     logout ({ commit }) {
       commit('set', {type: 'isLoggedIn', items: false})
       sessionStorage.removeItem('token')
+    },
+    init ({ commit, state }) {
+      let token = sessionStorage.getItem('token')
+      if (token) {
+        commit('set', {type: 'isLoggedIn', items: true})
+        let cart = sessionStorage.getItem('cart') || '[]'
+        cart = JSON.parse(cart)
+        cart.forEach(item => {
+          Object.defineProperty(item, 'num', {
+            get () { return this._num },
+            set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
+          })
+        })
+        commit('set', {type: 'mcart', items: cart})
+      }
     }
   },
   getters: {
