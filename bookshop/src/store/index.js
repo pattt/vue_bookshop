@@ -23,7 +23,7 @@ const store = new Vuex.Store({
       item._num = 1
       Object.defineProperty(item, 'num', {
         get: function () { return this._num },
-        set: function (y) { this._num = y; alert('qw'); sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
+        set: function (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
       })
       cart.push(item)
       state.mcart = cart
