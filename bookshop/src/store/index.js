@@ -18,23 +18,17 @@ const store = new Vuex.Store({
       state[type] = items
     },
     addToCart (state, item) {
-      let cart = sessionStorage.getItem('cart') || '[]'
-      cart = JSON.parse(cart)
       item._num = 1
       Object.defineProperty(item, 'num', {
-        get: function () { return this._num },
-        set: function (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
+        get () { return this._num },
+        set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
       })
-      cart.push(item)
-      state.mcart = cart
-      sessionStorage.setItem('cart', JSON.stringify(cart))
+      state.mcart.push(item)
+      sessionStorage.setItem('cart', JSON.stringify(state.mcart))
     },
     removeFromCart (state, item) {
-      let cart = sessionStorage.getItem('cart') || '[]'
-      cart = JSON.parse(cart)
-      cart = cart.filter(v => v.book_id !== item.book_id)
-      state.mcart = cart
-      sessionStorage.setItem('cart', JSON.stringify(cart))
+      state.mcart = state.mcart.filter(v => v.book_id !== item.book_id)
+      sessionStorage.setItem('cart', JSON.stringify(state.mcart))
     }
   },
   actions: {
