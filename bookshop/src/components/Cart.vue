@@ -38,7 +38,7 @@
       },
       total () {
         let total = this.$store.getters.mcart.length && this.$store.getters.mcart
-          .map(book => book.discount_tax ? book.book_price * (1 - book.discount_tax / 100) : book.book_price)
+          .map(book => book.discount_tax ? book.book_price * (1 - book.discount_tax / 100) : book.book_price * book.num)
           .reduce((a, i) => +a + +i) * (1 - this.user.discount_tax / 100)
 
         return Math.round(total * 100) / 100
@@ -53,7 +53,6 @@
         let token = sessionStorage.getItem('token')
         let {data: {success}} = await axios.put('http://localhost:8008/api/order', {book: order}, {headers: {token}})
         if (success) {
-          console.log(success)
           this.$store.dispatch('dropCart')
         }
       }
