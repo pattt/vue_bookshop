@@ -112,6 +112,9 @@ const store = new Vuex.Store({
         })
         commit('set', {type: 'mcart', items: cart})
       }
+    },
+    dropCart ({commit}) {
+      commit('set', {type: 'mcart', items: []})
     }
   },
   getters: {

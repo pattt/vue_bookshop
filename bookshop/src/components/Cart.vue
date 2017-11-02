@@ -19,14 +19,15 @@
       </template>
     </v-data-table>
 
-    <div v-if="user">User Discount: {{user.discount_tax}} Total: {{total}}</div>
-
+    <div v-if="user">User Discount: {{user.discount_tax}}% Total: {{total}}</div>
+    <v-btn @click="buy" >Buy</v-btn>
   </div>
 
 
 </template>
 
 <script>
+  import axios from 'axios'
   export default {
     computed: {
       cart () {
@@ -36,14 +37,25 @@
         return this.$store.getters.user
       },
       total () {
-        return this.$store.getters.mcart
+        let total = this.$store.getters.mcart.length && this.$store.getters.mcart
           .map(book => book.discount_tax ? book.book_price * (1 - book.discount_tax / 100) : book.book_price)
           .reduce((a, i) => +a + +i) * (1 - this.user.discount_tax / 100)
+
+        return Math.round(total * 100) / 100
       }
     },
     methods: {
       remove (book) {
         this.$store.commit('removeFromCart', book)
+      },
+      async buy () {
+        let order = this.$store.getters.mcart.map(book => { return {id: book.book_id, count: book.num} })
+        let token = sessionStorage.getItem('token')
+        let {data: {success}} = await axios.put('http://localhost:8008/api/order', {book: order}, {headers: {token}})
+        if (success) {
+          console.log(success)
+          this.$store.dispatch('dropCart')
+        }
       }
     }
   }
