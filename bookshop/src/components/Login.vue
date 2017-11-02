@@ -17,7 +17,7 @@
             type="password"
             v-model="password"
             :rules="passwordRules"
-            :counter="10"
+            :counter="8"
             required
           ></v-text-field>
 
@@ -34,7 +34,7 @@
 
       </div>
       <div v-else>
-        Logged in
+        Hi, <span v-if="user">{{user.name}}</span>
         <v-btn @click="logOut" >Log Out</v-btn>
       </div>
 
@@ -50,7 +50,7 @@
         password: '',
         passwordRules: [
           (v) => !!v || 'Password is required',
-          (v) => v.length >= 10 || 'Passsword must be more than 10 characters'
+          (v) => v.length >= 8 || 'Passsword must be more than 10 characters'
         ],
         email: '',
         emailRules: [
@@ -62,12 +62,15 @@
     computed: {
       isLoggedIn () {
         return this.$store.getters.isLoggedIn
+      },
+      user () {
+        return this.$store.getters.user
       }
     },
     methods: {
       singin () {
         if (this.$refs.form.validate()) {
-          this.$store.dispatch('login', {login: this.name, password: this.password})
+          this.$store.dispatch('login', {login: this.email, password: this.password})
         }
       },
       logOut () {

@@ -11,7 +11,8 @@ const store = new Vuex.Store({
     isLoggedIn: false,
     genres: [],
     authors: [],
-    mcart: []
+    mcart: [],
+    user: null
   },
   mutations: {
     set (state, {type, items}) {
@@ -58,17 +59,37 @@ const store = new Vuex.Store({
     },
     async login ({commit, dispatch}, creds) {
       let token = null
+//      let user = null
       if (_.isObject(creds)) {
         try {
           let response = await axios.post('http://localhost:8008/api/auth', creds)
-          console.log(response)
           token = _.get(response, 'data.data.token')
+          if (token) {
+            dispatch('getuser', token)
+//            response = await axios.get('http://localhost:8008/api/user', {headers: {'token': token}})
+//            user = _.get(response, 'data.data')
+          }
         } catch (e) {
-
+          token = null
         }
         if (token) {
           sessionStorage.setItem('token', token)
           commit('set', {type: 'isLoggedIn', items: true})
+//          commit('set', {type: 'user', items: user})
+        }
+      }
+    },
+    async getuser ({commit}, token) {
+      let user = null
+      if (token) {
+        try {
+          let response = await axios.get('http://localhost:8008/api/user', {headers: {'token': token}})
+          user = _.get(response, 'data.data')
+        } catch (e) {
+          user = null
+        }
+        if (_.isObject(user)) {
+          commit('set', {type: 'user', items: user})
         }
       }
     },
@@ -76,16 +97,17 @@ const store = new Vuex.Store({
       commit('set', {type: 'isLoggedIn', items: false})
       sessionStorage.removeItem('token')
     },
-    init ({ commit, state }) {
+    init ({ commit, getters, dispatch }) {
       let token = sessionStorage.getItem('token')
       if (token) {
         commit('set', {type: 'isLoggedIn', items: true})
+        dispatch('getuser', token)
         let cart = sessionStorage.getItem('cart') || '[]'
         cart = JSON.parse(cart)
         cart.forEach(item => {
           Object.defineProperty(item, 'num', {
             get () { return this._num },
-            set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify(state.mcart)) }
+            set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify(getters.mcart)) }
           })
         })
         commit('set', {type: 'mcart', items: cart})
@@ -107,6 +129,9 @@ const store = new Vuex.Store({
     },
     mcart (state) {
       return state.mcart
+    },
+    user (state) {
+      return state.user
     }
   }
 })

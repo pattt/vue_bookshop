@@ -25,7 +25,11 @@
         <td class="text-xs-center">{{ props.item.authors.map( q => q.author_name).join(', ') }}</td>
         <td class="text-xs-center">{{ props.item.genres.map( q => q.genre_name).join(', ') }}</td>
         <td class="text-xs-center">{{ props.item.book_description }}</td>
-        <td class="text-xs-center">{{ props.item.book_price }}</td>
+        <td class="text-xs-center">
+          <del v-if="props.item.discount_tax">{{ props.item.book_price }}</del>
+          {{ props.item.book_price - (props.item.book_price / 100 * props.item.discount_tax)  }}
+        </td>
+        <td class="text-xs-center">{{ +props.item.discount_tax }}%</td>
         <td><router-link :to="{ name: 'book', params: {id: props.item.book_id} }" class="nav-item nav-link">Details</router-link></td>
       </template>
     </v-data-table>
@@ -42,7 +46,8 @@
           { text: 'Author', value: 'authors', align: 'center' },
           { text: 'Genre', value: 'genres', align: 'center' },
           { text: 'Description', value: 'book_description', align: 'center', sortable: false },
-          { text: 'Price', value: 'book_price', align: 'center' }
+          { text: 'Price', value: 'book_price', align: 'center' },
+          { text: 'Discount', value: 'discount_tax', align: 'center' }
         ],
         genre: null,
         author: null
