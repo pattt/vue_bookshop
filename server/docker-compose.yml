@@ -3,7 +3,7 @@ services:
     apachephp:
         image: nimmis/apache-php5
         volumes:
-            - /Users/pasha/projects/vuejs/bookshop/server/www:/var/www/html
+            - ./www:/var/www/html
         ports: 
             - "8008:80"
         depends_on:
