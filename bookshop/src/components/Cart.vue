@@ -37,10 +37,7 @@
         return this.$store.getters.user
       },
       total () {
-        let total = this.$store.getters.mcart.count && [...this.$store.getters.mcart]
-          .map(book => (book.discount_tax ? book.book_price * (1 - book.discount_tax / 100) : book.book_price) * book.num)
-          .reduce((a, i) => +a + +i) * (1 - this.user.discount_tax / 100)
-
+        let total = this.$store.getters.mcart.count && this.$store.getters.mcart * (1 - this.user.discount_tax / 100)
         return Math.round(total * 100) / 100
       }
     },
