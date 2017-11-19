@@ -26,7 +26,7 @@ const store = new Vuex.Store({
       item._num = 1
       Object.defineProperty(item, 'num', {
         get () { return this._num },
-        set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify([...state.mcart])) }
+        set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify([...state.mcart])); location.reload() }
       })
       state.mcart.items = [...state.mcart.items, item]
       Cart.saveCart(state.mcart)
