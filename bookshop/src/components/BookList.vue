@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-select
-      v-bind:items="genres"
+      v-bind:items="[{genre_id:null, genre_name: 'All'}].concat(genres)"
       v-model="genre"
       label="Select Genre"
       class="input-group--focused"
@@ -9,7 +9,7 @@
       item-text="genre_name"
     ></v-select>
     <v-select
-      v-bind:items="authors"
+      v-bind:items="[{author_id:null, author_name: 'All'}].concat(authors)"
       v-model="author"
       label="Select Author"
       class="input-group--focused"

@@ -79,7 +79,7 @@ const store = new Vuex.Store({
         }
       }
     },
-    async getuser ({commit}, token) {
+    async getuser ({commit, getters}, token) {
       let user = null
       if (token) {
         try {
@@ -90,6 +90,7 @@ const store = new Vuex.Store({
         }
         if (_.isObject(user)) {
           commit('set', {type: 'user', items: user})
+          getters.mcart.discount = user.discount_tax
         }
       }
     },

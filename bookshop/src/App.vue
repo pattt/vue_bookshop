@@ -4,6 +4,17 @@
       <v-toolbar>
         <v-toolbar-side-icon @click.stop="leftside = !leftside"></v-toolbar-side-icon>
         <v-toolbar-title>BookShop %)</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items v-if="isLoggedIn">
+          <router-link :to="{ name: 'cart'}" tag="button">
+          <v-btn flat>
+            <v-icon>shopping_cart</v-icon>
+            {{cart.count}}
+            ({{String(cart)}})
+          </v-btn>
+          </router-link>
+        </v-toolbar-items>
+
       </v-toolbar>
 
       <v-navigation-drawer light absolute temporary v-model="leftside">
@@ -21,8 +32,7 @@
         </v-list>
 
         <v-container>
-          <v-layout>
-        <login></login></v-layout>
+          <login></login>
         </v-container>
 
       </v-navigation-drawer>
@@ -40,8 +50,10 @@
   import Login from './components/Login'
   import VToolbar from 'vuetify/es5/components/VToolbar/VToolbar'
   import VNavigationDrawer from 'vuetify/es5/components/VNavigationDrawer/VNavigationDrawer'
+  import VIcon from 'vuetify/es5/components/VIcon/VIcon'
   export default {
     components: {
+      VIcon,
       VNavigationDrawer,
       VToolbar,
       booklist: BookList,
@@ -53,15 +65,23 @@
         items: [
           { title: 'Home', icon: 'dashboard', link: '/' },
           { title: 'About', icon: 'question_answer', link: '' },
-          { title: 'Books', icon: 'question_answer', link: '/' },
-          { title: 'Cart', icon: 'question_answer', link: '/cart' },
-          { title: 'Registration', icon: 'question_answer', link: '/registration' }
+          { title: 'Books', icon: 'book', link: '/' },
+          { title: 'Cart', icon: 'shopping_cart', link: '/cart' },
+          { title: 'Registration', icon: 'tag_faces', link: '/registration' }
         ]
       }
     },
     methods: {
       goto (link) {
         this.$router.push(link)
+      }
+    },
+    computed: {
+      isLoggedIn () {
+        return this.$store.getters.isLoggedIn
+      },
+      cart () {
+        return this.$store.getters.mcart
       }
     },
     mounted () {

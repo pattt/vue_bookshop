@@ -1,8 +1,9 @@
 <template>
   <div>
-    <router-link :to="{ name: 'BookList'}" class="nav-item nav-link">to book list</router-link>
-{{book}}
+    <v-container>
+{{book}}<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <v-btn @click="addToCart">add to cart</v-btn>
+      </v-container>
   </div>
 </template>
 
