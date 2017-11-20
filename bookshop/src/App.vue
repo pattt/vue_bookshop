@@ -64,8 +64,8 @@
         leftside: null,
         items: [
           { title: 'Home', icon: 'dashboard', link: '/' },
-          { title: 'About', icon: 'question_answer', link: '' },
-          { title: 'Books', icon: 'book', link: '/' },
+          { title: 'About', icon: 'question_answer', link: '/about' },
+          { title: 'Books', icon: 'book', link: '/books' },
           { title: 'Cart', icon: 'shopping_cart', link: '/cart' },
           { title: 'Registration', icon: 'tag_faces', link: '/registration' }
         ]

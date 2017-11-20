@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-{{book}}<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{{book}}<br><br><br><br><br><br><br><br><br><br><br><br>
     <v-btn @click="addToCart">add to cart</v-btn>
       </v-container>
   </div>
