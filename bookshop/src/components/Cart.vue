@@ -47,7 +47,7 @@
       async buy () {
         let order = this.$store.getters.mcart.map(book => { return {id: book.book_id, count: book.num} })
         let token = sessionStorage.getItem('token')
-        let {data: {success}} = await axios.put('http://localhost:8008/api/order', {book: order}, {headers: {token}})
+        let {data: {success}} = await axios.put('http://autoshop.local:8081/api/order', {book: order}, {headers: {token}})
         if (success) {
           this.$store.dispatch('dropCart')
         }

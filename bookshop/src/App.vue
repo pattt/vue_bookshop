@@ -85,7 +85,7 @@
       }
     },
     mounted () {
-      this.$store.dispatch('init')
+      this.$store.dispatch('init', {payload: {api_url: this.$config('api_url')}})
     }
   }
 
