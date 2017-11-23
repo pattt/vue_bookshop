@@ -1,35 +1,30 @@
 <template>
   <div>
     <v-container>
-{{book}}<br><br><br><br><br><br><br><br><br><br><br><br>
-    <v-btn @click="addToCart">add to cart</v-btn>
+{{book_selected}}<br><br><br><br><br><br><br><br><br><br><br><br>
+    <v-btn @click="addToCartWithRedirect">add to cart</v-btn>
       </v-container>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import { mapGetters, mapActions } from 'vuex'
+import _ from 'underscore'
+
 export default {
   name: 'book',
-  data () {
-    return {
-      book: {}
-    }
-  },
-  methods: {
-    addToCart () {
-      this.$store.commit('addToCart', this.book)
+  methods: _.extend({}, mapActions(['getBook', 'addToCart']), {
+    addToCartWithRedirect () {
+      this.addToCart()
       this.$router.push({name: 'cart'})
     }
+  }),
+  mounted () {
+    this.getBook({payload: {api_url: this.$config('api_url'), id: this.$route.params.id}})
   },
-  async mounted () {
-    try {
-      let {data: {data: res}} = await axios.get('http://localhost:8008/api/getBookById/' + this.$route.params.id)
-      this.book = res
-    } catch (e) {
-
-    }
-  }
+  computed: mapGetters({
+    'book_selected': 'book'
+  })
 }
 </script>
 
