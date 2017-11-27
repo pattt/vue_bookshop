@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
+import axios from '../api/bookShopApi'
 import _ from 'lodash'
 import Cart from '../dao/Cart'
 
@@ -39,7 +39,7 @@ const store = new Vuex.Store({
   actions: {
     async booklist ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get('http://localhost:8008/api/getBooks')
+        let {data: {data: res}} = await axios.get('getBooks')
         commit('set', {type: 'books', items: res})
       } catch (e) {
 
@@ -47,7 +47,7 @@ const store = new Vuex.Store({
     },
     async genres ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get('http://localhost:8008/api/getGenres')
+        let {data: {data: res}} = await axios.get('getGenres')
         commit('set', {type: 'genres', items: res})
       } catch (e) {
 
@@ -55,7 +55,7 @@ const store = new Vuex.Store({
     },
     async authors ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get('http://localhost:8008/api/getAuthors')
+        let {data: {data: res}} = await axios.get('getAuthors')
         commit('set', {type: 'authors', items: res})
       } catch (e) {
 
@@ -65,7 +65,7 @@ const store = new Vuex.Store({
       let token = null
       if (_.isObject(creds)) {
         try {
-          let response = await axios.post('http://localhost:8008/api/auth', creds)
+          let response = await axios.post('auth', creds)
           token = _.get(response, 'data.data.token')
           if (token) {
             dispatch('getuser', token)
@@ -83,7 +83,7 @@ const store = new Vuex.Store({
       let user = null
       if (token) {
         try {
-          let response = await axios.get('http://localhost:8008/api/user', {headers: {'token': token}})
+          let response = await axios.get('user', {headers: {'token': token}})
           user = _.get(response, 'data.data')
         } catch (e) {
           user = null

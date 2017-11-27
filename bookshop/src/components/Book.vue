@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../api/bookShopApi'
 export default {
   name: 'book',
   data () {
@@ -24,7 +24,7 @@ export default {
   },
   async mounted () {
     try {
-      let {data: {data: res}} = await axios.get('http://localhost:8008/api/getBookById/' + this.$route.params.id)
+      let {data: {data: res}} = await axios.get(`getBookById/${this.$route.params.id}`)
       this.book = res
     } catch (e) {
 

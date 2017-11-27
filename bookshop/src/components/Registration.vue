@@ -37,7 +37,7 @@
 
 
 <script>
-  import axios from 'axios'
+  import axios from '../api/bookShopApi'
   export default {
     name: 'registration',
     data () {
@@ -65,7 +65,7 @@
     methods: {
       async submit () {
         if (this.$refs.form.validate()) {
-          let {data: {success, data: {token}}} = await axios.post('http://localhost:8008/api/registration', {
+          let {data: {success, data: {token}}} = await axios.post('registration', {
             name: this.name,
             login: this.email,
             password: this.password
