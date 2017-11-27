@@ -65,7 +65,7 @@
     methods: {
       async submit () {
         if (this.$refs.form.validate()) {
-          let {data: {success, data: {token}}} = await axios.post('http://localhost:8008/api/registration', {
+          let {data: {success, data: {token}}} = await axios.post('http://autoshop.local:8081/api/registration', {
             name: this.name,
             login: this.email,
             password: this.password

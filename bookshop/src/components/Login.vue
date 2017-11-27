@@ -70,7 +70,7 @@
     methods: {
       singin () {
         if (this.$refs.form.validate()) {
-          this.$store.dispatch('login', {login: this.email, password: this.password})
+          this.$store.dispatch('login', {payload: {login: this.email, password: this.password, api_url: this.$config.api_url}})
         }
       },
       logOut () {
