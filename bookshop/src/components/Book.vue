@@ -20,7 +20,7 @@ export default {
     }
   }),
   mounted () {
-    this.getBook({payload: {api_url: this.$config('api_url'), id: this.$route.params.id}})
+    this.getBook({id: this.$route.params.id})
   },
   computed: mapGetters({
     'book_selected': 'book'

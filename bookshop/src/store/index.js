@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import _ from 'lodash'
 import Cart from '../dao/Cart'
+import config from 'Config'
 
 Vue.use(Vuex)
 
@@ -40,33 +41,33 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    async booklist ({commit}, {payload}) {
+    async booklist ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get(payload.api_url + 'getBooks')
+        let {data: {data: res}} = await axios.get(config.api_url + 'getBooks')
         commit('set', {type: 'books', data: res})
       } catch (e) {
 
       }
     },
-    async getBook ({commit}, {payload}) {
+    async getBook ({commit}, {id}) {
       try {
-        let {data: {data: res}} = await axios.get(payload.api_url + 'getBookById/' + payload.id)
+        let {data: {data: res}} = await axios.get(config.api_url + 'getBookById/' + id)
         commit('set', {type: 'book', data: res})
       } catch (e) {
 
       }
     },
-    async genres ({commit}, {payload}) {
+    async genres ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get(payload.api_url + 'getGenres')
+        let {data: {data: res}} = await axios.get(config.api_url + 'getGenres')
         commit('set', {type: 'genres', data: res})
       } catch (e) {
 
       }
     },
-    async authors ({commit}, {payload}) {
+    async authors ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get(payload.api_url + 'getAuthors')
+        let {data: {data: res}} = await axios.get(config.api_url + 'getAuthors')
         commit('set', {type: 'authors', data: res})
       } catch (e) {
 
@@ -76,10 +77,10 @@ const store = new Vuex.Store({
       let token = null
       if (_.isString(payload.login) && _.isString(payload.password)) {
         try {
-          let response = await axios.post(payload.api_url + 'auth', {login: payload.login, password: payload.password})
+          let response = await axios.post(config.api_url + 'auth', {login: payload.login, password: payload.password})
           token = _.get(response, 'data.data.token')
           if (token) {
-            dispatch('getuser', {payload: {api_url: payload.api_url, token: token}})
+            dispatch('getuser', {token: token})
           }
         } catch (e) {
           token = null
@@ -90,11 +91,11 @@ const store = new Vuex.Store({
         }
       }
     },
-    async getuser ({commit, getters}, {payload}) {
+    async getuser ({commit, getters}, {token}) {
       let user = null
-      if (_.isString(payload.token)) {
+      if (_.isString(token)) {
         try {
-          let response = await axios.get(payload.api_url + 'user', {headers: {'token': payload.token}})
+          let response = await axios.get(config.api_url + 'user', {headers: {'token': token}})
           user = _.get(response, 'data.data')
         } catch (e) {
           user = null
@@ -112,11 +113,11 @@ const store = new Vuex.Store({
     addToCart ({ commit }) {
       commit('addToCart')
     },
-    init ({ commit, getters, dispatch }, { payload }) {
+    init ({ commit, getters, dispatch }) {
       let token = sessionStorage.getItem('token')
       if (token) {
         commit('set', {type: 'isLoggedIn', data: true})
-        dispatch('getuser', {payload: {api_url: payload.api_url, token: token}})
+        dispatch('getuser', {token: token})
         let cart = Cart.loadCart()
         cart.forEach(item => {
           Object.defineProperty(item, 'num', {

@@ -73,13 +73,13 @@
     },
     mounted () {
       if (this.books.length === 0) {
-        this.$store.dispatch('booklist', {payload: {api_url: this.$config('api_url')}})
+        this.$store.dispatch('booklist')
       }
       if (this.genres.length === 0) {
-        this.$store.dispatch('genres', {payload: {api_url: this.$config('api_url')}})
+        this.$store.dispatch('genres')
       }
       if (this.authors.length === 0) {
-        this.$store.dispatch('authors', {payload: {api_url: this.$config('api_url')}})
+        this.$store.dispatch('authors')
       }
     }
   }

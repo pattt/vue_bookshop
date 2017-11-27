@@ -31,5 +31,10 @@ module.exports = merge(baseWebpackConfig, {
       inject: true
     }),
     new FriendlyErrorsPlugin()
-  ]
+  ],
+  externals: {
+    'Config': JSON.stringify({
+      api_url: "http://autoshop.local:8081/api/"
+    })
+  }
 })
