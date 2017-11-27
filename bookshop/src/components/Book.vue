@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-{{book_selected}}<br><br><br><br><br><br><br><br><br><br><br><br>
+{{bookSelected}}<br><br><br><br><br><br><br><br><br><br><br><br>
     <v-btn @click="addToCartWithRedirect">add to cart</v-btn>
       </v-container>
   </div>
@@ -9,21 +9,21 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import _ from 'underscore'
 
 export default {
   name: 'book',
-  methods: _.extend({}, mapActions(['getBook', 'addToCart']), {
+  methods: {
+    ...mapActions(['getBook', 'addToCart']),
     addToCartWithRedirect () {
       this.addToCart()
       this.$router.push({name: 'cart'})
     }
-  }),
+  },
   mounted () {
     this.getBook({id: this.$route.params.id})
   },
   computed: mapGetters({
-    'book_selected': 'book'
+    'bookSelected': 'book'
   })
 }
 </script>
