@@ -3,6 +3,7 @@ var fs = require('fs')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
+const Dotenv = require('dotenv-webpack');
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -73,5 +74,11 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [
+    new Dotenv({
+      path: './.env', // Path to .env file (this is the default)
+      safe: true // load .env.example (defaults to "false" which does not use dotenv-safe)
+    })
+  ]
 }
