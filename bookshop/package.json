@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "axios": "^0.17.0",
+    "dotenv-webpack": "^1.5.4",
     "lodash": "^4.17.4",
     "vue": "^2.4.2",
     "vue-router": "^2.7.0",
