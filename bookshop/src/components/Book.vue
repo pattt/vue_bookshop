@@ -1,35 +1,30 @@
 <template>
   <div>
     <v-container>
-{{book}}<br><br><br><br><br><br><br><br><br><br><br><br>
-    <v-btn @click="addToCart">add to cart</v-btn>
+{{bookSelected}}<br><br><br><br><br><br><br><br><br><br><br><br>
+    <v-btn @click="addToCartWithRedirect">add to cart</v-btn>
       </v-container>
   </div>
 </template>
 
 <script>
-import axios from '../api/bookShopApi'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'book',
-  data () {
-    return {
-      book: {}
-    }
-  },
   methods: {
-    addToCart () {
-      this.$store.commit('addToCart', this.book)
+    ...mapActions(['getBook', 'addToCart']),
+    addToCartWithRedirect () {
+      this.addToCart()
       this.$router.push({name: 'cart'})
     }
   },
-  async mounted () {
-    try {
-      let {data: {data: res}} = await axios.get(`getBookById/${this.$route.params.id}`)
-      this.book = res
-    } catch (e) {
-
-    }
-  }
+  mounted () {
+    this.getBook({id: this.$route.params.id})
+  },
+  computed: mapGetters({
+    'bookSelected': 'book'
+  })
 }
 </script>
 
