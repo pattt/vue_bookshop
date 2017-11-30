@@ -9,15 +9,17 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     books: [],
+    book: null,
     isLoggedIn: false,
     genres: [],
     authors: [],
     mcart: new Cart(),
-    user: null
+    user: null,
+    spinner: false
   },
   mutations: {
-    set (state, {type, items}) {
-      state[type] = items
+    set (state, {type, data}) {
+      state[type] = data
     },
     setCart (state, items) {
       state.mcart.items = items
@@ -39,24 +41,35 @@ const store = new Vuex.Store({
   actions: {
     async booklist ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get('getBooks')
-        commit('set', {type: 'books', items: res})
+        let {data: {data: books}} = await axios.get('getBooks')
+        commit('set', {type: 'books', data: books})
       } catch (e) {
 
       }
     },
+    async getBook ({commit}, {id}) {
+      try {
+        let {data: {data: book}} = await axios.get(`getBookById/${id}`)
+        commit('set', {type: 'book', data: book})
+      } catch (e) {
+
+      }
+    },
+    addToCart ({ commit }) {
+      commit('addToCart')
+    },
     async genres ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get('getGenres')
-        commit('set', {type: 'genres', items: res})
+        let {data: {data: genres}} = await axios.get('getGenres')
+        commit('set', {type: 'genres', data: genres})
       } catch (e) {
 
       }
     },
     async authors ({commit}) {
       try {
-        let {data: {data: res}} = await axios.get('getAuthors')
-        commit('set', {type: 'authors', items: res})
+        let {data: {data: authors}} = await axios.get('getAuthors')
+        commit('set', {type: 'authors', data: authors})
       } catch (e) {
 
       }
@@ -75,7 +88,7 @@ const store = new Vuex.Store({
         }
         if (token) {
           sessionStorage.setItem('token', token)
-          commit('set', {type: 'isLoggedIn', items: true})
+          commit('set', {type: 'isLoggedIn', data: true})
         }
       }
     },
@@ -89,19 +102,19 @@ const store = new Vuex.Store({
           user = null
         }
         if (_.isObject(user)) {
-          commit('set', {type: 'user', items: user})
+          commit('set', {type: 'user', data: user})
           getters.mcart.discount = user.discount_tax
         }
       }
     },
     logout ({ commit }) {
-      commit('set', {type: 'isLoggedIn', items: false})
+      commit('set', {type: 'isLoggedIn', data: false})
       sessionStorage.removeItem('token')
     },
     init ({ commit, getters, dispatch }) {
       let token = sessionStorage.getItem('token')
       if (token) {
-        commit('set', {type: 'isLoggedIn', items: true})
+        commit('set', {type: 'isLoggedIn', data: true})
         dispatch('getuser', token)
         let cart = Cart.loadCart()
         cart.forEach(item => {
@@ -120,6 +133,9 @@ const store = new Vuex.Store({
   getters: {
     books (state) {
       return state.books
+    },
+    book (state) {
+      return state.book
     },
     genres (state) {
       return state.genres
