@@ -3,8 +3,11 @@ import Vuex from 'vuex'
 import axios from '../api/bookShopApi'
 import _ from 'lodash'
 import Cart from '../dao/Cart'
+import SessionStorage from '../dao/SessionStorage'
 
 Vue.use(Vuex)
+
+const sessionProvider = new SessionStorage()
 
 const store = new Vuex.Store({
   state: {
@@ -13,29 +16,24 @@ const store = new Vuex.Store({
     isLoggedIn: false,
     genres: [],
     authors: [],
-    mcart: new Cart(),
-    user: null,
-    spinner: false
+    mcart: {},
+    user: null
   },
   mutations: {
     set (state, {type, data}) {
       state[type] = data
     },
     setCart (state, items) {
-      state.mcart.items = items
+      state.mcart = items
     },
-    addToCart (state, item) {
-      item._num = 1
-      Object.defineProperty(item, 'num', {
-        get () { return this._num },
-        set (y) { this._num = y; sessionStorage.setItem('cart', JSON.stringify([...state.mcart])); location.reload() }
-      })
-      state.mcart.items = [...state.mcart.items, item]
-      Cart.saveCart(state.mcart)
+    addToCart (state) {
+      state.mcart = Cart.addToCart(state.mcart, state.book)
     },
-    removeFromCart (state, item) {
-      state.mcart.items = [...state.mcart].filter(v => v.book_id !== item.book_id)
-      Cart.saveCart(state.mcart)
+    removeFromCart (state, {id}) {
+      state.mcart = Cart.removeFromCart(state.mcart, id)
+    },
+    updateBookNum (state, {id, num}) {
+      state.mcart = Cart.updateBookNum(state.mcart, id, num)
     }
   },
   actions: {
@@ -55,8 +53,9 @@ const store = new Vuex.Store({
 
       }
     },
-    addToCart ({ commit }) {
+    addToCart ({ commit, state }) {
       commit('addToCart')
+      Cart.saveCart(state.mcart, sessionProvider)
     },
     async genres ({commit}) {
       try {
@@ -74,6 +73,22 @@ const store = new Vuex.Store({
 
       }
     },
+    removeBook ({ commit, state }, id) {
+      commit('removeFromCart', {id})
+      Cart.saveCart(state.mcart, sessionProvider)
+    },
+    changeNumBook ({ commit, state }, {id, num}) {
+      commit('updateBookNum', {id, num})
+      Cart.saveCart(state.mcart, sessionProvider)
+    },
+    async buy () {
+      let order = this.$store.getters.mcart.map(book => { return {id: book.book_id, count: book.num} })
+      let token = sessionStorage.getItem('token')
+      let {data: {success}} = await axios.put('order', {book: order}, {headers: {token}})
+      if (success) {
+        this.$store.dispatch('dropCart')
+      }
+    },
     async login ({commit, dispatch}, creds) {
       let token = null
       if (_.isObject(creds)) {
@@ -87,12 +102,12 @@ const store = new Vuex.Store({
           token = null
         }
         if (token) {
-          sessionStorage.setItem('token', token)
+          sessionProvider.set('token', token)
           commit('set', {type: 'isLoggedIn', data: true})
         }
       }
     },
-    async getuser ({commit, getters}, token) {
+    async getuser ({commit, state}, token) {
       let user = null
       if (token) {
         try {
@@ -103,28 +118,25 @@ const store = new Vuex.Store({
         }
         if (_.isObject(user)) {
           commit('set', {type: 'user', data: user})
-          getters.mcart.discount = user.discount_tax
+          state.mcart.discount = user.discount_tax
         }
       }
     },
     logout ({ commit }) {
       commit('set', {type: 'isLoggedIn', data: false})
-      sessionStorage.removeItem('token')
+      sessionProvider.remove('token')
     },
     init ({ commit, getters, dispatch }) {
-      let token = sessionStorage.getItem('token')
+      let token = sessionProvider.get('token')
+      const cart = Cart.loadCart(sessionProvider)
+
       if (token) {
         commit('set', {type: 'isLoggedIn', data: true})
         dispatch('getuser', token)
-        let cart = Cart.loadCart()
-        cart.forEach(item => {
-          Object.defineProperty(item, 'num', {
-            get () { return this._num },
-            set (y) { this._num = y; Cart.saveCart(getters.mcart) }
-          })
-        })
-        commit('setCart', cart)
+      } else {
+        commit('set', {type: 'isNotLoggedIn', data: true})
       }
+      commit('setCart', cart)
     },
     dropCart ({commit}) {
       commit('setCart', [])
@@ -147,10 +159,13 @@ const store = new Vuex.Store({
       return state.isLoggedIn
     },
     mcart (state) {
-      return state.mcart
+      return Cart.processToArray(state.mcart)
     },
     user (state) {
       return state.user
+    },
+    totalCart (state) {
+      return Cart.totalCart(state.mcart)
     }
   }
 })
